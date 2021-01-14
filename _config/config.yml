@@ -1,0 +1,15 @@
+---
+Name: nswdpc-cache-headers
+---
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - 'NSWDPC\Utilities\Cache\CacheHeaderExtension'
+NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
+  # one of the HTTPCacheControlMiddleware STATE_* constants
+  state: 'enabled'
+  max_age: null
+  s_max_age: null
+  vary : null
+  no_store: null
+  must_revalidate: null
+  no_cache: null

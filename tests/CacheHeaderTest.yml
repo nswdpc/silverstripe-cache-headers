@@ -1,0 +1,4 @@
+NSWDPC\Utilities\Cache\Tests\CacheHeaderTestPage:
+  root_page:
+    Title: 'Header Test'
+    URLSegment: 'header-test'
