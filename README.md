@@ -5,6 +5,8 @@ Default Silverstripe cache handling [sends headers that are not considered cache
 
 This module allows you to modify this behaviour via configuration, allowing a proxy to cache based on the headers sent by the application.
 
+> This module is in development and is not yet suitable for production environments
+
 ### Usage
 
 - Install this extension using composer

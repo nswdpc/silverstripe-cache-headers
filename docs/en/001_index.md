@@ -5,6 +5,7 @@
 
 The following will call disableCache:
 
++ Site is in dev environment
 + URLs viewed on the draft stage (stage=Stage)
 + CMS previewable URLs
 + Draft preview links (via the `silverstripe/sharedraftcontent` module)
@@ -56,6 +57,6 @@ In Cloudflare, you can set [the Browser Cache TTL option](https://support.cloudf
 
 > Cloudflare respects whichever value is higher: the Browser Cache TTL in Cloudflare or the max-age header.
 
-The `s-max-age` header affects the
+The `s-max-age` header affects the Edge Cache TTL
 
 > Simultaneously specify a Cloudflare Edge Cache TTL different than a browser’s cache TTL respectively via the s-maxage and max-age Cache-Control headers.  
