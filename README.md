@@ -37,7 +37,7 @@ enableCache()
 
 By default this module enables the cache (enableCache), but does not provide the force parameter as `true`.
 
-See [Documentation](./docs/en/001_index.md) for a primer on various options, including sample configurations.
+See [documentation](./docs/en/001_index.md) for a primer on various options, including sample configurations.
 
 ## License
 

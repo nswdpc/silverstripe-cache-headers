@@ -3,7 +3,7 @@
 
 ## Standard disallow cache handling in Silvertripe
 
-The following will call disableCache:
+The following will call disableCache in `SilverStripe\Control\Middleware\HTTPCacheControlMiddleware`
 
 + Site is in dev environment
 + URLs viewed on the draft stage (stage=Stage)
