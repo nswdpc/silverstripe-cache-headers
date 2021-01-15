@@ -1,9 +1,12 @@
 ---
+Name: nswdpc-cache-headers-middleware
+---
+SilverStripe\Core\Injector\Injector:
+  SilverStripe\Control\Middleware\HTTPCacheControlMiddleware:
+    class: NSWDPC\Utilities\Cache\CacheHeaderProxyMiddleware
+---
 Name: nswdpc-cache-headers
 ---
-SilverStripe\CMS\Controllers\ContentController:
-  extensions:
-    - 'NSWDPC\Utilities\Cache\CacheHeaderExtension'
 NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
   # one of the HTTPCacheControlMiddleware STATE_* constants
   state: 'enabled'
