@@ -5,6 +5,12 @@ SilverStripe\Core\Injector\Injector:
   SilverStripe\Control\Middleware\HTTPCacheControlMiddleware:
     class: NSWDPC\Utilities\Cache\CacheHeaderProxyMiddleware
 ---
+Name: nswdpc-cache-headers-statemodification
+---
+SilverStripe\Control\Controller:
+  extensions:
+    - 'NSWDPC\Utilities\Cache\CacheStateModificationExtension'
+---
 Name: nswdpc-cache-headers
 ---
 NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
@@ -16,3 +22,15 @@ NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
   no_store: null
   must_revalidate: null
   no_cache: null
+  # controller configuration
+  controllers:
+    disableCache:
+      - 'SilverStripe\Dev\DevelopmentAdmin'
+      - 'SilverStripe\Dev\DevBuildController'
+      - 'SilverStripe\Dev\DevConfigController'
+      - 'SilverStripe\Dev\SapphireInfo'
+      - 'SilverStripe\Dev\InstallerTest'
+      - 'SilverStripe\ORM\DatabaseAdmin'
+      - 'SilverStripe\Security\Security'
+      - 'SilverStripe\ShareDraftContent\Controllers\ShareDraftController'
+      - 'SilverStripe\Assets\Storage\ProtectedFileController'

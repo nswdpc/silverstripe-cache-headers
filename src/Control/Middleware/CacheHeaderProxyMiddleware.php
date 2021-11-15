@@ -1,6 +1,7 @@
 <?php
 namespace NSWDPC\Utilities\Cache;
 
+use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
 use SilverStripe\Control\HTTPResponse_Exception;
@@ -14,99 +15,96 @@ use SilverStripe\Core\Injector\Injector;
 class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
 
     /**
-     * Generate response for the given request
-     *
-     * @param HTTPRequest $request
-     * @param callable $delegate
-     * @return HTTPResponse
-     * @throws HTTPResponse_Exception
+     * @var bool
      */
-    public function process(HTTPRequest $request, callable $delegate)
-    {
-        $response = parent::process($request, $delegate);
-        return $response;
+    protected $useAppliedState = false;
+
+    /**
+     * Flag that the applied state should be preferred
+     * See {@link CacheStateModificationExtension} for an example
+     */
+    public function useAppliedState() {
+        $this->useAppliedState = true;
+        return $this;
     }
 
     /**
-     * Update state based on current request and response objects
-     *
-     * @param HTTPRequest $request
-     * @param HTTPResponse $response
+     * @inheritdoc
+     * Performs much the same as parent::augmentState() with the exception of
+     * a configired public/enabled cache being honoured when a session is active,
+     * which your application needs to handle
      */
     protected function augmentState(HTTPRequest $request, HTTPResponse $response)
     {
 
-        // Errors disable cache (unless some errors are cached intentionally by usercode)
+        // Errors and redirects disable cache
         if ($response->isError() || $response->isRedirect()) {
-            // Even if publicCache(true) is specified, errors will be uncacheable
             $this->disableCache(true);
         }
 
+        // Session is active
         if ($request->getSession()->getAll()) {
-            // session is active but may be on a publicly cacheable page
-            if($this->getState() == parent::STATE_DISABLED) {
-                // request already set state to disabled - noop
-                return;
-            }
-
-            if($this->getState() == parent::STATE_PRIVATE) {
-                // request already set the state to private
+            // Honour private/disabled cache with active session
+            if( in_array($this->getState(), [ parent::STATE_DISABLED, parent::STATE_PRIVATE ]) ) {
                 return;
             }
         }
 
-        /**
-         * Can apply configured state, without forcing it
-         * this will allow code forcing a state OR
-         * those states with higher precedence
-         * to take precedence
-         */
-         $this->applyConfiguredState();
+        // If a specific cache state was applied in the application via self::useAppliedState()
+        // this should be honoured
+        if($this->useAppliedState) {
+            return;
+        }
+
+        // Apply state based on configuration
+        $this->applyConfiguredState();
 
     }
 
     /**
      * Set the state based on configuration
      * Use configuration to modify the state and directives
+     * The state is not forced, this allows the application to force a state
+     * Forced states with higher precedence will be used in preference to
+     * any configured state you set
+     * Example: if the configured state is 'public' and an application applies another state
+     * that state will be used, as publicCache has the lowest precedence
      * @return void
      */
     protected function applyConfiguredState() {
-        $configuration = Injector::inst()->create(CacheHeaderConfiguration::class);
 
-        $state = $configuration->config()->get('state');
-        $max_age = $configuration->config()->get('max_age');
-        $s_max_age = $configuration->config()->get('s_max_age');
-        $vary = $configuration->config()->get('vary');
-        $must_revalidate = $configuration->config()->get('must_revalidate');
-        $no_store = $configuration->config()->get('no_store');
-
-        $mw = HTTPCacheControlMiddleware::singleton();
+        $state = CacheHeaderConfiguration::config()->get('state');
+        $maxAge = CacheHeaderConfiguration::config()->get('max_age');
+        $sharedMaxAge = CacheHeaderConfiguration::config()->get('s_max_age');
+        $vary = CacheHeaderConfiguration::config()->get('vary');
+        $mustRevalidate = CacheHeaderConfiguration::config()->get('must_revalidate');
+        $noStore = CacheHeaderConfiguration::config()->get('no_store');
 
         if(!is_null($vary)) {
-            $mw->setVary($vary);
+            $this->setVary($vary);
         }
-        if(!is_null($s_max_age)) {
-            $mw->setSharedMaxAge($s_max_age);
+        if(!is_null($sharedMaxAge)) {
+            $this->setSharedMaxAge($sharedMaxAge);
         }
-        if(!is_null($must_revalidate)) {
-            $mw->setMustRevalidate($must_revalidate);
+        if(!is_null($mustRevalidate)) {
+            $this->setMustRevalidate($mustRevalidate);
         }
-        if(!is_null($no_store)) {
-            $mw->setNoStore($no_store);
+        if(!is_null($noStore)) {
+            $this->setNoStore($noStore);
         }
 
         switch($state) {
             case HTTPCacheControlMiddleware::STATE_PUBLIC:
-                $mw->publicCache(false, $max_age);
+                $this->publicCache(false, $maxAge);
                 break;
             case HTTPCacheControlMiddleware::STATE_PRIVATE:
-                $mw->privateCache(false);
+                $this->privateCache(false);
                 break;
             case HTTPCacheControlMiddleware::STATE_DISABLED:
-                $mw->disableCache(false);
+                $this->disableCache(false);
                 break;
             default:
-                $mw->enableCache(false, $max_age);
+                $this->enableCache(false, $maxAge);
                 break;
         }
 
