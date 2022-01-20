@@ -30,6 +30,7 @@ NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
       - 'SilverStripe\Dev\DevConfigController'
       - 'SilverStripe\Dev\SapphireInfo'
       - 'SilverStripe\Dev\InstallerTest'
+      - 'SilverStripe\GraphQL\Controller'
       - 'SilverStripe\ORM\DatabaseAdmin'
       - 'SilverStripe\Security\Security'
       - 'SilverStripe\ShareDraftContent\Controllers\ShareDraftController'
