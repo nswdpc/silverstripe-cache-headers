@@ -1,4 +1,43 @@
 NSWDPC\Utilities\Cache\Tests\CacheHeaderTestPage:
   root_page:
+    ID: 1
     Title: 'Header Test'
     URLSegment: 'header-test'
+    CanViewType: 'Inherit'
+    ParentID: 0
+  sub_page:
+    ID: 2
+    Title: 'Sub page header test'
+    URLSegment: 'sub-page-header-test'
+    CanViewType: 'Anyone'
+    ParentID: 1
+  restricted_sub_page:
+    ID: 3
+    Title: 'Restricted page header test'
+    URLSegment: 'restricted-page-header-test'
+    CanViewType: 'OnlyTheseUsers'
+    ParentID: 1
+  loggedin_sub_page:
+    ID: 4
+    Title: 'Logged in page header test'
+    URLSegment: 'loggedin-page-header-test'
+    CanViewType: 'LoggedInUsers'
+    ParentID: 1
+  inherit_anyone_sub_page:
+    ID: 5
+    Title: 'Inherited anyone in page header test'
+    URLSegment: 'inherited-anyone-page-header-test'
+    CanViewType: 'Inherit'
+    ParentID: 2
+  inherit_restricted_sub_page:
+    ID: 6
+    Title: 'Inherited restricted in page header test'
+    URLSegment: 'inherited-restricted-page-header-test'
+    CanViewType: 'Inherit'
+    ParentID: 3
+  parentless_page:
+    ID: 7
+    Title: 'Parentless Test'
+    URLSegment: 'parentless-test'
+    CanViewType: 'Inherit'
+    ParentID: 0

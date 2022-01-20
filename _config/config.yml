@@ -11,6 +11,12 @@ SilverStripe\Control\Controller:
   extensions:
     - 'NSWDPC\Utilities\Cache\CacheStateModificationExtension'
 ---
+Name: nswdpc-cache-headers-contentcontroller
+---
+SilverStripe\CMS\Controllers\ContentController:
+  extensions:
+    - 'NSWDPC\Utilities\Cache\ContentControllerExtension'
+---
 Name: nswdpc-cache-headers
 ---
 NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
@@ -30,6 +36,7 @@ NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
       - 'SilverStripe\Dev\DevConfigController'
       - 'SilverStripe\Dev\SapphireInfo'
       - 'SilverStripe\Dev\InstallerTest'
+      - 'SilverStripe\GraphQL\Controller'
       - 'SilverStripe\ORM\DatabaseAdmin'
       - 'SilverStripe\Security\Security'
       - 'SilverStripe\ShareDraftContent\Controllers\ShareDraftController'
