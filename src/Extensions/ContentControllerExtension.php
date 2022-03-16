@@ -21,8 +21,7 @@ class ContentControllerExtension extends Extension {
         if($stage == Versioned::LIVE) {
             $record = $this->owner->data();
             if($record && ($record instanceof SiteTree) && !$this->hasAnyoneViewPermission($record)) {
-                // If the page can't be viewed, disable cache
-                HTTPCacheControlMiddleware::singleton()->disableCache(true)->useAppliedState();
+                HTTPCacheControlMiddleware::singleton()->privateCache(true)->useAppliedState();
             }
         }
     }
