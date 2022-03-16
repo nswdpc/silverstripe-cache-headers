@@ -237,7 +237,6 @@ class CacheHeaderTest extends FunctionalTest {
         $headers = $response->getHeaders();
         $this->assertTrue(!empty($headers['cache-control']), "Page 2 - no cache-control header in response");
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        print_r($parts);
         $this->assertTrue( $this->hasCacheDirective($parts, "public"), "Page 2 - Header {$headers['cache-control']} missing no-cache" );
         $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 2 - Header {$headers['cache-control']} missing must-revalidate" );
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
