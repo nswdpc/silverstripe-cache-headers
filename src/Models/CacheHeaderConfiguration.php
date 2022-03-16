@@ -27,4 +27,6 @@ class CacheHeaderConfiguration {
     private static $no_store = null;
     private static $no_cache = null;
 
+    private static $controllers = [];
+
 }
