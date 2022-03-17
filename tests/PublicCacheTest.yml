@@ -1,4 +1,4 @@
-NSWDPC\Utilities\Cache\Tests\CacheHeaderTestPage:
+NSWDPC\Utilities\Cache\Tests\PublicCachePage:
   root_page:
     ID: 1
     Title: 'Header Test'

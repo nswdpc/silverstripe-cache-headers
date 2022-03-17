@@ -41,3 +41,4 @@ NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
       - 'SilverStripe\Security\Security'
       - 'SilverStripe\ShareDraftContent\Controllers\ShareDraftController'
       - 'SilverStripe\Assets\Storage\ProtectedFileController'
+    privateCache: []

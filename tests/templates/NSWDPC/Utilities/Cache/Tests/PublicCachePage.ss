@@ -1,7 +1,7 @@
 <html>
 <body>
     <div class="form">
-        <h1>CACHE_HEADER_TEST_PAGE</h1>
+        <h1>PUBLIC_CACHE_PAGE</h1>
         {$Form}
     </div>
 </body>

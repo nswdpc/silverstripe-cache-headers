@@ -11,7 +11,7 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
 use PageController;
 
-class CacheHeaderTestPageController extends PageController implements TestOnly {
+class PublicCachePageController extends PageController implements TestOnly {
 
     public function Form()
     {

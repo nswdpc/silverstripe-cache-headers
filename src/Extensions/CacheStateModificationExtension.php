@@ -12,9 +12,24 @@ class CacheStateModificationExtension extends Extension {
 
     public function onBeforeInit() {
         $configuration = CacheHeaderConfiguration::config()->get('controllers');
+        if(!empty($configuration['privateCache'])) {
+            $this->setPrivateState($configuration['privateCache']);
+        }
         if(!empty($configuration['disableCache'])) {
             $this->setDisableState($configuration['disableCache']);
         }
+    }
+
+    /**
+     * Match current controller against an array of controller names
+     * @param array controllers to check current controller against
+     */
+    protected function matchController(array $controllers) : bool {
+        $controllerCheck = function($className, $k) use ($controllers) {
+            return ($this->owner instanceof $className);
+        };
+        $matches = array_filter($controllers, $controllerCheck, ARRAY_FILTER_USE_BOTH);
+        return !empty($matches);
     }
 
     /**
@@ -28,19 +43,29 @@ class CacheStateModificationExtension extends Extension {
             // none configured
             return;
         }
-        $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
-        $controllerClass = get_class($this->owner);
-        // Handle exact match on the controller class
-        if(in_array($controllerClass, $controllers)) {
+
+        if($match = $this->matchController($controllers)) {
+            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
             $cacheMiddleware->disableCache(true)->useAppliedState();
+        }
+    }
+
+    /**
+     * Based on the controller and configuration, trigger a private cache state with
+     * a max-age of 0 in the application
+     * and tell the {@link CacheHeaderProxyMiddleware} to honour that
+     * See config.yml for the configured list of controllers
+     * @param array $controllers controllers that should have a private cache
+     */
+    protected function setPrivateState(array $controllers) {
+        if(empty($controllers)) {
+            // none configured
             return;
         }
-        // Include subclasses of the controller class
-        foreach($controllers as $className) {
-            if(is_subclass_of($controllerClass, $className, true)) {
-                $cacheMiddleware->disableCache(true)->useAppliedState();
-                return;
-            }
+
+        if($match = $this->matchController($controllers)) {
+            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
+            $cacheMiddleware->privateCache(true)->useAppliedState();
         }
     }
 }

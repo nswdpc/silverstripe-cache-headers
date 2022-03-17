@@ -1,0 +1,14 @@
+NSWDPC\Utilities\Cache\Tests\CacheStatePrivatePage:
+  private_page:
+    ID: 1
+    Title: 'Private page Test'
+    URLSegment: 'private-cache'
+    CanViewType: 'Anyone'
+    ParentID: 0
+NSWDPC\Utilities\Cache\Tests\CacheStateDisablePage:
+  disable_page:
+    ID: 2
+    Title: 'Disable cache page Test'
+    URLSegment: 'disable-cache'
+    CanViewType: 'Anyone'
+    ParentID: 0

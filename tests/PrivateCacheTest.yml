@@ -1,0 +1,31 @@
+NSWDPC\Utilities\Cache\Tests\PrivateCachePage:
+  anyone_root_page:
+    ID: 1
+    Title: 'Anyone Root Page'
+    URLSegment: 'anyone-root-page-test'
+    CanViewType: 'Anyone'
+    ParentID: 0
+  inherit_root_page:
+    ID: 2
+    Title: 'Inherit Root Page'
+    URLSegment: 'inherit-root-page-test'
+    CanViewType: 'Inherit'
+    ParentID: 0
+  inherit_anyone_root_page:
+    ID: 3
+    Title: 'Inherit Anyone Root Page'
+    URLSegment: 'inherit-anyone-root-page-test'
+    CanViewType: 'Inherit'
+    ParentID: 1
+  anyone_inherit_root_page:
+    ID: 4
+    Title: 'Anyone Inherit Root Page'
+    URLSegment: 'anyone-inherit-root-page-test'
+    CanViewType: 'Anyone'
+    ParentID: 2
+  loggedin_page:
+    ID: 5
+    Title: 'Logged in page header test'
+    URLSegment: 'loggedin-page-test'
+    CanViewType: 'LoggedInUsers'
+    ParentID: 1

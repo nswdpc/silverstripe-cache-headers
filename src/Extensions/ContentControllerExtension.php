@@ -21,38 +21,35 @@ class ContentControllerExtension extends Extension {
         if($stage == Versioned::LIVE) {
             $record = $this->owner->data();
             if($record && ($record instanceof SiteTree) && !$this->hasAnyoneViewPermission($record)) {
-                // If the page can't be viewed, disable cache
-                HTTPCacheControlMiddleware::singleton()->disableCache(true)->useAppliedState();
+                HTTPCacheControlMiddleware::singleton()->privateCache(true)->useAppliedState();
             }
         }
     }
 
     /**
-     * Return whether a SiteTree record has CanViewType of ANYONE
+     * Determine whether a SiteTree record can be viewed by anyone, taking into
+     * account site access settings and parent settings
      * @return bool
      */
     private function hasAnyoneViewPermission(SiteTree $record) : bool {
-
-        $siteConfig = $record->getSiteConfig();
-        if($siteConfig->CanViewType !== InheritedPermissions::ANYONE) {
-            return false;
-        }
 
         if($record->CanViewType === InheritedPermissions::ANYONE) {
             // this record sets permissions
             return true;
         } else if ($record->CanViewType === InheritedPermissions::INHERIT) {
-            // inherit permissions from parent
-            $parent = $record->Parent();
-            if(!empty($parent->ID)) {
-                // find permissions from parent
+            // inheriting from parent or site config
+            if( ($parent = $record->Parent()) && $parent->exists() ) {
+                // record has parent
                 return $this->hasAnyoneViewPermission($parent);
-            } else if($siteConfig->CanViewType ===  InheritedPermissions::ANYONE) {
-                // SiteConfig sets 'Anyone' permission
-                return true;
+            } else {
+                // inherit from site config
+                $siteConfig = $record->getSiteConfig();
+                return $siteConfig && $siteConfig->CanViewType === InheritedPermissions::ANYONE;
             }
+        } else {
+            // not
+            return false;
         }
-        return false;
     }
 
 }
