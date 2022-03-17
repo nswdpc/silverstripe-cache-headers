@@ -3,29 +3,23 @@
 namespace NSWDPC\Utilities\Cache\Tests;
 
 use NSWDPC\Utilities\Cache\CacheHeaderConfiguration;
-use SilverStripe\CMS\Controllers\ContentController;
-use SilverStripe\CMS\Models\SiteTree;
-use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Control\Controller;
-use SilverStripe\Control\Director;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
-use SilverStripe\Core\Config\Config;
-use SilverStripe\Dev\FunctionalTest;
-use SilverStripe\Dev\TestOnly;
-use SilverStripe\Versioned\Versioned;
-use SilverStripe\View\SSViewer;
-use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-class CacheHeaderTest extends FunctionalTest {
+require_once( dirname(__FILE__) . "/AbstractCacheTest.php" );
 
-    protected static $fixture_file = 'CacheHeaderTest.yml';
+/**
+ * Test with public caching and siteconfig varying settings
+ */
+class PublicCacheTest extends AbstractCacheTest {
+
+    protected static $fixture_file = 'PublicCacheTest.yml';
 
     protected $usesDatabase = true;
 
     protected static $extra_dataobjects = [
-        CacheHeaderTestPage::class
+        PublicCachePage::class
     ];
 
     /**
@@ -41,25 +35,6 @@ class CacheHeaderTest extends FunctionalTest {
     protected function setUp()
     {
         parent::setUp();
-        Director::config()->update('alternate_base_url', '/');
-
-        // Add test theme
-        $themes = [
-            "nswdpc/silverstripe-cache-headers:tests/templates",
-            SSViewer::DEFAULT_THEME,
-        ];
-        SSViewer::set_themes($themes);
-
-        foreach (Page::get() as $page) {
-            $page->publishSingle();
-        }
-
-        // ensure on the live stage
-        Versioned::set_stage(Versioned::LIVE);
-
-        // need to update default states as framework sets defaultState: 'disabled' in dev env
-        Config::inst()->set(HTTPCacheControlMiddleware::class, 'defaultState', HTTPCacheControlMiddleware::STATE_ENABLED);
-        Config::inst()->set(HTTPCacheControlMiddleware::class, 'defaultForcingLevel', 0);
 
         // The test application has a configured public state by default
         CacheHeaderConfiguration::config()->set('state', 'public');
@@ -67,20 +42,6 @@ class CacheHeaderTest extends FunctionalTest {
         CacheHeaderConfiguration::config()->set('s_max_age', $this->sMaxAge);
         CacheHeaderConfiguration::config()->set('must_revalidate', true);
 
-        $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
-
-        // intial request without session
-        $this->logOut();
-
-    }
-
-    /**
-     * Set site config CanViewType
-     */
-    private function setSiteConfigCanViewType(string $type) {
-        $siteConfig = SiteConfig::current_site_config();
-        $siteConfig->CanViewType = $type;
-        $siteConfig->write();
     }
 
     public function testCacheHeaders() {
@@ -89,7 +50,7 @@ class CacheHeaderTest extends FunctionalTest {
         $response = $this->get("header-test/");
         $body = $response->getBody();
 
-        $this->assertTrue(strpos($body, "<h1>CACHE_HEADER_TEST_PAGE</h1>") !== false, "Content CACHE_HEADER_TEST_PAGE is not in response body");
+        $this->assertTrue(strpos($body, "<h1>PUBLIC_CACHE_PAGE</h1>") !== false, "Content PUBLIC_CACHE_PAGE is not in response body");
         $headers = $response->getHeaders();
         $this->assertTrue(!empty($headers['cache-control']), "no cache-control header in response");
 
@@ -240,43 +201,6 @@ class CacheHeaderTest extends FunctionalTest {
         $this->assertTrue( $this->hasCacheDirective($parts, "public"), "Page 2 - Header {$headers['cache-control']} missing no-cache" );
         $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 2 - Header {$headers['cache-control']} missing must-revalidate" );
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
-    }
-
-    private function getCacheControlParts($header) : array {
-        $directives = array_map("trim", explode("," , $header));
-        $parts = [];
-        foreach($directives as $directive) {
-            $part = explode("=", $directive, 2);
-            $parts[ $part[0] ] = isset($part[1]) ? $part[1] : null;
-        }
-        return $parts;
-    }
-
-
-    /**
-     * Check a state exists in the cache control parts
-     * @param array $parts cache control parts in key => value pairing
-     * @param string $state eg private, public
-     */
-    private function hasCachingState(array $parts, $state) : bool {
-        return array_key_exists($state, $parts) !== false;
-    }
-
-    /**
-     * Check a directive exists in the cache control parts, pass a value to check that as well
-     * @param array $parts cache control parts in key => value pairing
-     * @param string $directive
-     * @param null $value, optional, check if the value of the directive matches this value passed in
-     */
-    private function hasCacheDirective(array $parts, string $directive, $value = null) : bool {
-        $exists = array_key_exists($directive, $parts);
-        if(!$exists) {
-            return false;
-        } else if(!is_null($value)) {
-            return $parts[ $directive ] == $value;
-        } else {
-            return true;
-        }
     }
 
 }
