@@ -16,7 +16,7 @@ use SilverStripe\View\SSViewer;
  */
 abstract class AbstractCacheTest extends FunctionalTest {
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         Director::config()->update('alternate_base_url', '/');
