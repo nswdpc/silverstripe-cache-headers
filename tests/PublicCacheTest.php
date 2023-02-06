@@ -32,7 +32,7 @@ class PublicCacheTest extends AbstractCacheTest {
      */
     protected $sMaxAge = 7401;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
 

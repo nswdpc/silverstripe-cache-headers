@@ -23,7 +23,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      */
     protected $maxAge = 301;
 
-    protected function setUp()
+    protected function setUp() : void
     {
         parent::setUp();
         // Test pages with a max-age and private cache, must-revalidate
