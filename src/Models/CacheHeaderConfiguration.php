@@ -18,15 +18,45 @@ class CacheHeaderConfiguration {
     use Extensible;
     use Injectable;
 
+    /**
+     * @var string
+     * @config
+     */
     private static $state = 'enabled';
 
+    /**
+     * @config
+     */
     private static $max_age = null;
+
+    /**
+     * @config
+     */
     private static $s_max_age = null;
+
+    /**
+     * @config
+     */
     private static $must_revalidate = null;
+
+    /**
+     * @config
+     */
     private static $vary = null;
+
+    /**
+     * @config
+     */
     private static $no_store = null;
+
+    /**
+     * @config
+     */
     private static $no_cache = null;
 
+    /**
+     * @config
+     */
     private static $controllers = [];
 
 }

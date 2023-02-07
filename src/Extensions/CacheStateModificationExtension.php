@@ -22,7 +22,7 @@ class CacheStateModificationExtension extends Extension {
 
     /**
      * Match current controller against an array of controller names
-     * @param array controllers to check current controller against
+     * @param array $controllers to check current controller against
      */
     protected function matchController(array $controllers) : bool {
         $controllerCheck = function($className, $k) use ($controllers) {
