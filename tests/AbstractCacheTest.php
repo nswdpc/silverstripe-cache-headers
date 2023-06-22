@@ -19,7 +19,7 @@ abstract class AbstractCacheTest extends FunctionalTest {
     protected function setUp() : void
     {
         parent::setUp();
-        Director::config()->update('alternate_base_url', '/');
+        Config::modify()->set(Director::class, 'alternate_base_url', '/');
 
         // Add test theme
         $themes = [
@@ -36,8 +36,8 @@ abstract class AbstractCacheTest extends FunctionalTest {
         Versioned::set_stage(Versioned::LIVE);
 
         // need to update default states as framework sets defaultState: 'disabled' in dev env
-        Config::inst()->set(HTTPCacheControlMiddleware::class, 'defaultState', HTTPCacheControlMiddleware::STATE_ENABLED);
-        Config::inst()->set(HTTPCacheControlMiddleware::class, 'defaultForcingLevel', 0);
+        Config::modify()->set(HTTPCacheControlMiddleware::class, 'defaultState', HTTPCacheControlMiddleware::STATE_ENABLED);
+        Config::modify()->set(HTTPCacheControlMiddleware::class, 'defaultForcingLevel', 0);
 
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
 
