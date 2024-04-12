@@ -21,5 +21,18 @@
     },
     "require-dev": {
         "phpunit/phpunit": "^9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "NSWDPC\\Utilities\\Cache\\": [
+                "src/Control/Middleware/",
+                "src/Extensions/",
+                "src/Models/",
+                "src/Services/"
+            ],
+            "NSWDPC\\Utilities\\Cache\\Tests\\": [
+                "tests/"
+            ]
+        }
     }
 }
