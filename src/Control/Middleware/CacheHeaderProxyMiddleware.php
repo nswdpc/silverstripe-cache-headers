@@ -24,7 +24,12 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
      * See {@link CacheStateModificationExtension} for an example
      */
     public function useAppliedState() : self {
-        $this->useAppliedState = true;
+        if($this->getState() == parent::STATE_PUBLIC) {
+            Logger::log("Setting useAppliedState for public state will be ignored", "NOTICE");
+            $this->useAppliedState = false;
+        } else {
+            $this->useAppliedState = true;
+        }
         return $this;
     }
 
@@ -37,17 +42,9 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
     {
         parent::augmentState($request, $response);
 
-        // If the application has made a change to the default framework state
-        // the forcing level will be set to >= 0
-        // and the default forcing level may be set
-
-        // if(!is_null($this->forcingLevel) || $this->config()->get('defaultForcingLevel') > 0) {
-        //    return;
-        // }
-
         // If a specific cache state was applied in the application
         // via self::useAppliedState(), this should be honoured
-        if($this->useAppliedState) {
+        if($this->useAppliedState && ($this->getState() != parent::STATE_PUBLIC)) {
             return;
         }
 
