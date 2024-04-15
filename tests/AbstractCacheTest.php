@@ -2,6 +2,7 @@
 
 namespace NSWDPC\Utilities\Cache\Tests;
 
+use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
@@ -33,6 +34,9 @@ abstract class AbstractCacheTest extends FunctionalTest {
     {
         parent::setUp();
         Director::config()->update('alternate_base_url', '/');
+
+        // Nested URLs must be true
+        Config::inst()->set(SiteTree::class, 'nested_urls', true);
 
         // Add test theme
         $themes = [

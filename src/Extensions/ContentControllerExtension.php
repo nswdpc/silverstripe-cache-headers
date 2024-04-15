@@ -21,7 +21,7 @@ class ContentControllerExtension extends Extension {
         if($stage == Versioned::LIVE) {
             $record = $this->owner->data();
             if($record && ($record instanceof SiteTree) && !$this->hasAnyoneViewPermission($record)) {
-                HTTPCacheControlMiddleware::singleton()->privateCache(true)->useAppliedState();
+                HTTPCacheControlMiddleware::singleton()->disableCache()->useAppliedState();
             }
         }
     }
@@ -32,7 +32,11 @@ class ContentControllerExtension extends Extension {
      * @return bool
      */
     private function hasAnyoneViewPermission(SiteTree $record) : bool {
-
+        // siteconfig check
+        $siteConfig = $record->getSiteConfig();
+        if($siteConfig && $siteConfig->CanViewType !== InheritedPermissions::ANYONE) {
+            return false;
+        }
         if($record->CanViewType === InheritedPermissions::ANYONE) {
             // this record sets permissions
             return true;
@@ -42,8 +46,7 @@ class ContentControllerExtension extends Extension {
                 // record has parent
                 return $this->hasAnyoneViewPermission($parent);
             } else {
-                // inherit from site config
-                $siteConfig = $record->getSiteConfig();
+                // record has no parent, inherit from site config
                 return $siteConfig && $siteConfig->CanViewType === InheritedPermissions::ANYONE;
             }
         } else {
