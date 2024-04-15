@@ -97,7 +97,7 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
 
         switch($state) {
             case HTTPCacheControlMiddleware::STATE_PUBLIC:
-                $this->publicCache(false, $maxAge);
+                $this->publicCache(false);
                 break;
             case HTTPCacheControlMiddleware::STATE_PRIVATE:
                 $this->privateCache(false);
@@ -106,7 +106,7 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
                 $this->disableCache(false);
                 break;
             default:
-                $this->enableCache(false, $maxAge);
+                $this->enableCache(false);
                 break;
         }
 
