@@ -31,24 +31,44 @@ class PrivateCacheTest extends AbstractCacheTest {
         CacheHeaderConfiguration::config()->set('max_age', $this->maxAge);
         CacheHeaderConfiguration::config()->set('s_max_age', null);
         CacheHeaderConfiguration::config()->set('must_revalidate', true);
+        CacheHeaderConfiguration::config()->set('no_cache', null);
+        CacheHeaderConfiguration::config()->set('no_store', null);
 
+    }
+
+    /**
+     * 1. SiteConfig = Anyone
+     * 2. Root page with Anyone permission
+     * 3. Private cache control headers per configuration
+     */
+    public function testPageHasCacheHeaderConfigurationValues() {
+        $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
+        $response = $this->get("/anyone-root-page-test/");
+        $headers = $response->getHeaders();
+
+        $this->assertTrue(!empty($headers['cache-control']), "Page 1 - must have a cache-control response header");
+
+        $parts = $this->getCacheControlParts($headers['cache-control']);
+        $this->assertTrue( $this->hasCachingState($parts, "private"), "Page 1 - Header {$headers['cache-control']} has private" );
+        $this->assertTrue( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 1 - Header {$headers['cache-control']} missing max-age" );
+        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 1 - Header {$headers['cache-control']} missing must-revalidate" );
     }
 
     /**
      * 1. Restrict SiteConfig =  Logged in users
      * 2. Root page with Anyone permission
-     * Result should match configuration
+     * 3. Private cache control headers
      */
-    public function testCanViewAnyoneRootPage() {
+    public function testRestrictedSiteCanViewAnyoneRootPage() {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/anyone-root-page-test/");
         $headers = $response->getHeaders();
 
-        $this->assertTrue(!empty($headers['cache-control']), "Page 1 - no cache-control header in response");
+        $this->assertTrue(!empty($headers['cache-control']), "Page 1 - must have a cache-control response header");
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        $this->assertTrue( $this->hasCachingState($parts, "private"), "Page 1 - Header {$headers['cache-control']} missing private state" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 1 - Header {$headers['cache-control']} missing max-age" );
+        $this->assertTrue( $this->hasCachingState($parts, "no-cache") && $this->hasCachingState($parts, "no-store"), "Page 1 - Header {$headers['cache-control']} has no-cache && no-store" );
+        $this->assertFalse( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 1 - Header {$headers['cache-control']} missing max-age" );
         $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 1 - Header {$headers['cache-control']} missing must-revalidate" );
     }
 
@@ -56,54 +76,53 @@ class PrivateCacheTest extends AbstractCacheTest {
     /**
      * 1. Restrict SiteConfig =  Logged in users
      * 2. Root page with Anyone permission
-     * Result should match configuration
+     * 3. Private cache control headers
      */
-    public function testCanViewInheritUnderAnyoneRootPage() {
+    public function testRestrictedSiteCanViewInheritUnderAnyoneRootPage() {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/anyone-root-page-test/inherit-anyone-root-page-test/");
         $headers = $response->getHeaders();
 
-        $this->assertTrue(!empty($headers['cache-control']), "Page 3 - no cache-control header in response");
+        $this->assertTrue(!empty($headers['cache-control']), "Page 3 - must have a cache-control response header");
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        $this->assertTrue( $this->hasCachingState($parts, "private"), "Page 3 - Header {$headers['cache-control']} missing private state" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 3 - Header {$headers['cache-control']} missing max-age" );
+        $this->assertTrue( $this->hasCachingState($parts, "no-cache") && $this->hasCachingState($parts, "no-store"), "Page 3 - Header {$headers['cache-control']} has no-cache && no-store" );
+        $this->assertFalse( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 3 - Header {$headers['cache-control']} missing max-age" );
         $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 3 - Header {$headers['cache-control']} missing must-revalidate" );
     }
 
     /**
      * 1. Restrict SiteConfig =  Logged in users
      * 2. Root page with Inherit permission
-     * Result should be a restricted cache as this will redirect to log in
+     * 3. Result should be a restricted cache as this will redirect to log in
      */
-    public function testCanViewInheritRootPage() {
+    public function testRestrictedSiteCanViewInheritRootPage() {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/inherit-root-page-test/");
         $headers = $response->getHeaders();
-        $this->assertTrue(!empty($headers['cache-control']), "Page 2 - no cache-control header in response");
+        $this->assertTrue(!empty($headers['cache-control']), "Page 2 - must have a cache-control response header");
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        $this->assertTrue( $this->hasCacheDirective($parts, "no-cache"), "Page 2 - Header {$headers['cache-control']} missing no-cache" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "no-store"), "Page 2 - Header {$headers['cache-control']} missing no-store" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 2 - Header {$headers['cache-control']} missing must-revalidate" );
+        $this->assertTrue( $this->hasCachingState($parts, "no-cache") && $this->hasCachingState($parts, "no-store"), "Page 2 - Header {$headers['cache-control']} has no-cache && no-store" );
+        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 2 - Header {$headers['cache-control']} has must-revalidate" );
     }
 
     /**
      * 1. Restrict SiteConfig =  Logged in users
      * 2. Sub page with Anyone permission, root has inherit permission (page 2)
-     * Result should match configuration
+     * 3. Result should be a private cache
      */
-    public function testCanViewAnyoneUnderInheritRootPage() {
+    public function testRestrictedSiteCanViewAnyoneUnderInheritRootPage() {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/inherit-root-page-test/anyone-inherit-root-page-test/");
         $headers = $response->getHeaders();
 
-        $this->assertTrue(!empty($headers['cache-control']), "Page 4 - no cache-control header in response");
+        $this->assertTrue(!empty($headers['cache-control']), "Page 4 - must have a cache-control response header");
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        $this->assertTrue( $this->hasCachingState($parts, "private"), "Page 4 - Header {$headers['cache-control']} missing private state" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 4 - Header {$headers['cache-control']} missing max-age" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 4 - Header {$headers['cache-control']} missing must-revalidate" );
+        $this->assertTrue( $this->hasCachingState($parts, "no-cache") && $this->hasCachingState($parts, "no-store"), "Page 4 - Header {$headers['cache-control']} has no-cache && no-store" );
+        $this->assertFalse( $this->hasCacheDirective($parts, "max-age", $this->maxAge), "Page 4 - Header {$headers['cache-control']} no max-age" );
+        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 4 - Header {$headers['cache-control']} has must-revalidate" );
     }
 
     /**
@@ -115,12 +134,11 @@ class PrivateCacheTest extends AbstractCacheTest {
         $response = $this->get("/anyone-root-page-test/loggedin-page-test/");
         $headers = $response->getHeaders();
 
-        $this->assertTrue(!empty($headers['cache-control']), "Page 1 - no cache-control header in response");
+        $this->assertTrue(!empty($headers['cache-control']), "Page 5 - must have a cache-control response header");
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
-        $this->assertTrue( $this->hasCacheDirective($parts, "no-cache"), "Page 2 - Header {$headers['cache-control']} missing no-cache" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "no-store"), "Page 2 - Header {$headers['cache-control']} missing no-store" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 2 - Header {$headers['cache-control']} missing must-revalidate" );
+        $this->assertTrue( $this->hasCachingState($parts, "no-cache") && $this->hasCachingState($parts, "no-store"), "Page 5 - Header {$headers['cache-control']} has no-cache && no-store" );
+        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Page 5 - Header {$headers['cache-control']} has must-revalidate" );
     }
 
 }
