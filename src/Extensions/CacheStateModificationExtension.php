@@ -6,7 +6,7 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 
 /**
  * Check project configuration for controller cache state configuration
- * Currently supports disabling cache (forced) on specific controllers
+ * Currently supports private or disable cache (forced) states on specific controllers
  */
 class CacheStateModificationExtension extends Extension {
 

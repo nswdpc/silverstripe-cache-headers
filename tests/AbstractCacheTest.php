@@ -2,6 +2,7 @@
 
 namespace NSWDPC\Utilities\Cache\Tests;
 
+use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Config\Config;
 use SilverStripe\Control\Director;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
@@ -16,10 +17,26 @@ use SilverStripe\View\SSViewer;
  */
 abstract class AbstractCacheTest extends FunctionalTest {
 
+    /**
+     * Perform operations prior to boot
+     * e.g. to avoid cache control modifiers in phpunit config
+     */
+    public static function start()
+    {
+        unset($_GET['flush']);
+        unset($_REQUEST['flush']);
+        unset($GLOBALS['_GET']['flush']);
+        unset($GLOBALS['_REQUEST']['flush']);
+        parent::start();
+    }
+
     protected function setUp() : void
     {
         parent::setUp();
         Director::config()->update('alternate_base_url', '/');
+
+        // Nested URLs must be true
+        Config::inst()->set(SiteTree::class, 'nested_urls', true);
 
         // Add test theme
         $themes = [

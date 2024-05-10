@@ -1,22 +1,25 @@
 # Cache header support for Silverstripe
 
-
-Default Silverstripe cache handling [sends headers that are not considered cacheable](https://docs.silverstripe.org/en/4/developer_guides/performance/http_cache_headers/) by a proxy such as Cloudflare.
+The default Silverstripe cache handling sends headers that are not considered cacheable by a proxy such as Cloudflare.
 
 This module allows you to modify this behaviour via configuration, allowing a proxy to cache based on the headers sent by the application.
 
-> This module is in development and is not yet suitable for production environments
+## Useful information
 
-### Usage
+- [HTTP cache headers in Silverstripe](https://docs.silverstripe.org/en/4/developer_guides/performance/http_cache_headers/)
+- [MDN Cache-Control reference](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control)
+
+## Usage
 
 - Install this extension using composer
 - Modify the configuration rules to your requirements
-- Test behind your caching proxy and deploy
+- Test behind your caching proxy to verify Cache-Control and related header values are as expected
 
 ## Installation
 
 Install via composer:
-```
+
+```sh
 composer require nswdpc/silverstripe-cache-headers
 ```
 
@@ -53,6 +56,10 @@ See [documentation](./docs/en/001_index.md) for a primer on various options, inc
 We welcome bug reports, pull requests and feature requests on the Github Issue tracker for this project.
 
 Please review the [code of conduct](./code-of-conduct.md) prior to opening a new issue.
+
+## Security
+
+If you have found a security issue with this module, please email digital[@]dpc.nsw.gov.au in the first instance, detailing your findings.
 
 ## Development and contribution
 
