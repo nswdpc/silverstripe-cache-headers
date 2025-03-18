@@ -80,7 +80,7 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
 
         // if the state has been changed at all...
         if(!$this->inInitialState()) {
-            Logger::log("Not apply configured state as state has changed from default {$this->getState()}/{$this->forcingLevel}");
+            // Logger::log("Not apply configured state as state has changed from default {$this->getState()}/{$this->forcingLevel}");
             return;
         }
 
