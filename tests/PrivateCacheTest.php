@@ -6,7 +6,7 @@ use NSWDPC\Utilities\Cache\CacheHeaderConfiguration;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once( dirname(__FILE__) . "/AbstractCacheTest.php" );
+require_once( __DIR__ . "/AbstractCacheTest.php" );
 
 class PrivateCacheTest extends AbstractCacheTest {
 
@@ -23,6 +23,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      */
     protected $maxAge = 301;
 
+    #[\Override]
     protected function setUp() : void
     {
         parent::setUp();
@@ -41,7 +42,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      * 2. Root page with Anyone permission
      * 3. Private cache control headers per configuration
      */
-    public function testPageHasCacheHeaderConfigurationValues() {
+    public function testPageHasCacheHeaderConfigurationValues(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
         $response = $this->get("/anyone-root-page-test/");
         $headers = $response->getHeaders();
@@ -59,7 +60,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      * 2. Root page with Anyone permission
      * 3. Private cache control headers
      */
-    public function testRestrictedSiteCanViewAnyoneRootPage() {
+    public function testRestrictedSiteCanViewAnyoneRootPage(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/anyone-root-page-test/");
         $headers = $response->getHeaders();
@@ -78,7 +79,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      * 2. Root page with Anyone permission
      * 3. Private cache control headers
      */
-    public function testRestrictedSiteCanViewInheritUnderAnyoneRootPage() {
+    public function testRestrictedSiteCanViewInheritUnderAnyoneRootPage(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/anyone-root-page-test/inherit-anyone-root-page-test/");
         $headers = $response->getHeaders();
@@ -96,7 +97,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      * 2. Root page with Inherit permission
      * 3. Result should be a restricted cache as this will redirect to log in
      */
-    public function testRestrictedSiteCanViewInheritRootPage() {
+    public function testRestrictedSiteCanViewInheritRootPage(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/inherit-root-page-test/");
         $headers = $response->getHeaders();
@@ -112,7 +113,7 @@ class PrivateCacheTest extends AbstractCacheTest {
      * 2. Sub page with Anyone permission, root has inherit permission (page 2)
      * 3. Result should be a private cache
      */
-    public function testRestrictedSiteCanViewAnyoneUnderInheritRootPage() {
+    public function testRestrictedSiteCanViewAnyoneUnderInheritRootPage(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/inherit-root-page-test/anyone-inherit-root-page-test/");
         $headers = $response->getHeaders();
@@ -128,7 +129,7 @@ class PrivateCacheTest extends AbstractCacheTest {
     /**
      * Unrestricted site and root but has logged in sub page
      */
-    public function testLoggedInPageUnderUnrestricted() {
+    public function testLoggedInPageUnderUnrestricted(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
 
         $response = $this->get("/anyone-root-page-test/loggedin-page-test/");

@@ -21,6 +21,7 @@ abstract class AbstractCacheTest extends FunctionalTest {
      * Perform operations prior to boot
      * e.g. to avoid cache control modifiers in phpunit config
      */
+    #[\Override]
     public static function start()
     {
         unset($_GET['flush']);
@@ -30,6 +31,7 @@ abstract class AbstractCacheTest extends FunctionalTest {
         parent::start();
     }
 
+    #[\Override]
     protected function setUp() : void
     {
         parent::setUp();
@@ -73,12 +75,13 @@ abstract class AbstractCacheTest extends FunctionalTest {
     }
 
     protected function getCacheControlParts($header) : array {
-        $directives = array_map("trim", explode("," , $header));
+        $directives = array_map("trim", explode("," , (string) $header));
         $parts = [];
         foreach($directives as $directive) {
             $part = explode("=", $directive, 2);
-            $parts[ $part[0] ] = isset($part[1]) ? $part[1] : null;
+            $parts[ $part[0] ] = $part[1] ?? null;
         }
+
         return $parts;
     }
 
@@ -89,20 +92,19 @@ abstract class AbstractCacheTest extends FunctionalTest {
      * @param string $state eg private, public
      */
     protected function hasCachingState(array $parts, $state) : bool {
-        return array_key_exists($state, $parts) !== false;
+        return array_key_exists($state, $parts);
     }
 
     /**
      * Check a directive exists in the cache control parts, pass a value to check that as well
      * @param array $parts cache control parts in key => value pairing
-     * @param string $directive
      * @param null $value, optional, check if the value of the directive matches this value passed in
      */
     protected function hasCacheDirective(array $parts, string $directive, $value = null) : bool {
         $exists = array_key_exists($directive, $parts);
-        if(!$exists) {
+        if (!$exists) {
             return false;
-        } else if(!is_null($value)) {
+        } elseif (!is_null($value)) {
             return $parts[ $directive ] == $value;
         } else {
             return true;

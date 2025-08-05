@@ -7,7 +7,7 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once( dirname(__FILE__) . "/AbstractCacheTest.php" );
+require_once( __DIR__ . "/AbstractCacheTest.php" );
 
 /**
  * Test with public caching and siteconfig varying settings
@@ -32,6 +32,7 @@ class PublicCacheTest extends AbstractCacheTest {
      */
     protected $sMaxAge = 7401;
 
+    #[\Override]
     protected function setUp() : void
     {
         parent::setUp();
@@ -48,13 +49,13 @@ class PublicCacheTest extends AbstractCacheTest {
     /**
      * Test basic cache headers, header-test has a form
      */
-    public function testCacheHeaders() {
+    public function testCacheHeaders(): void {
 
         // page has form, this should disableCache
         $response = $this->get("header-test/");
         $body = $response->getBody();
 
-        $this->assertTrue(strpos($body, "<h1>PUBLIC_CACHE_PAGE</h1>") !== false, "Content PUBLIC_CACHE_PAGE is not in response body");
+        $this->assertTrue(str_contains($body, "<h1>PUBLIC_CACHE_PAGE</h1>"), "Content PUBLIC_CACHE_PAGE is not in response body");
         $headers = $response->getHeaders();
         $this->assertTrue(!empty($headers['cache-control']), "must have a cache-control response header");
 
@@ -68,7 +69,7 @@ class PublicCacheTest extends AbstractCacheTest {
     /**
      * Test basic cache headers where the page has no form
      */
-    public function testCacheHeadersWithNoForm() {
+    public function testCacheHeadersWithNoForm(): void {
 
         // request and do not include form
         $response = $this->get("header-test/?noform=1");
@@ -88,7 +89,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * formcache=1 -> disableSecurityToken, set method = GET
      * the result should be public caching
      */
-    public function testCacheHeadersWithFormCache() {
+    public function testCacheHeadersWithFormCache(): void {
 
         // request but turn off the security token and set to GET
         $response = $this->get("header-test/?formcache=1");
@@ -108,7 +109,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Test with form disableCache turned off but with a session
      * Result should be private cache
      */
-    public function testCacheHeadersWithFormCacheLoggedIn() {
+    public function testCacheHeadersWithFormCacheLoggedIn(): void {
 
         // log in - disable cache
         $this->logInWithPermission('ADMIN');
@@ -125,7 +126,7 @@ class PublicCacheTest extends AbstractCacheTest {
     /**
      * Tests based on CanViewType, with no form
      */
-    public function testCanViewRootPage() {
+    public function testCanViewRootPage(): void {
         // Inherit (root page)
         $response = $this->get("/header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -138,7 +139,7 @@ class PublicCacheTest extends AbstractCacheTest {
     /**
      * Tests with can view anyone
      */
-    public function testCanViewSubPageAnyone() {
+    public function testCanViewSubPageAnyone(): void {
         // Anyone page under root should be public
         $response = $this->get("/header-test/sub-page-header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -151,7 +152,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Tests sub page with "only these users" restriction
      * Result should not be public cache
      */
-    public function testCanViewSubPageOnlyTheseUsers() {
+    public function testCanViewSubPageOnlyTheseUsers(): void {
         // OnlyTheseUsers should not be public
         $response = $this->get("/header-test/restricted-page-header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -165,7 +166,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Tests sub page with logged in user restriction
      * Result should not be public cache
      */
-    public function testCanViewSubPageLoggedInUsers() {
+    public function testCanViewSubPageLoggedInUsers(): void {
         // LoggedInUsers page should not be public
         $response = $this->get("/header-test/loggedin-page-header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -178,7 +179,7 @@ class PublicCacheTest extends AbstractCacheTest {
     /**
      * Test inherited view=anyone page
      */
-    public function testCanViewSubPageInheritedAnyone() {
+    public function testCanViewSubPageInheritedAnyone(): void {
         // Inherited from parent page with Anyone - should bge public
         $response = $this->get("/header-test/sub-page-header-test/inherited-anyone-page-header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -191,7 +192,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Test inherited sub page, with OnlyTheseUsers permission
      * should not be public
      */
-    public function testCanViewSubPageInheritedOnlyTheseUsers() {
+    public function testCanViewSubPageInheritedOnlyTheseUsers(): void {
         // Inherited from parent page with OnlyTheseUsers set - not public
         $response = $this->get("/header-test/restricted-page-header-test/inherited-restricted-page-header-test/?noform=1");
         $headers = $response->getHeaders();
@@ -205,7 +206,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Restrict SiteConfig to Logged In Users and test root page (Inherit)
      * Should not be public
      */
-    public function testCanViewRestrictedRootPage() {
+    public function testCanViewRestrictedRootPage(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/parentless-test/?noform=1");
         $headers = $response->getHeaders();
@@ -220,7 +221,7 @@ class PublicCacheTest extends AbstractCacheTest {
      * Sub Page anyone, but restricted site config
      * Result should not be public cache
      */
-    public function testCanViewRestrictedSubPageAnyone() {
+    public function testCanViewRestrictedSubPageAnyone(): void {
         $this->setSiteConfigCanViewType( InheritedPermissions::LOGGED_IN_USERS );
         $response = $this->get("/header-test/sub-page-header-test/?noform=1");
         $headers = $response->getHeaders();

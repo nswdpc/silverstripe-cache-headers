@@ -7,6 +7,6 @@ use Page;
 
 class CacheStateDisablePage extends \Page implements TestOnly {
 
-    private static $table_name = 'CacheStateDisablePage';
+    private static string $table_name = 'CacheStateDisablePage';
 
 }

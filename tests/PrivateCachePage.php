@@ -7,6 +7,6 @@ use Page;
 
 class PrivateCachePage extends \Page implements TestOnly {
 
-    private static $table_name = 'PrivateCachePage';
+    private static string $table_name = 'PrivateCachePage';
 
 }

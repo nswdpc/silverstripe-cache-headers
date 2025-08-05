@@ -10,6 +10,7 @@ use SilverStripe\Versioned\Versioned;
 
 /**
  * Extension applied to ContentController
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\CMS\Controllers\ContentController & static)>
  */
 class ContentControllerExtension extends Extension {
 
@@ -27,27 +28,31 @@ class ContentControllerExtension extends Extension {
     private function applyRestrictedRecordCacheState() {
         $stage = Versioned::get_stage();
         if($stage != Versioned::LIVE) {
-            return;
+            return null;
         }
-        $record = $this->owner->data();
+
+        $record = $this->getOwner()->data();
         if(!$record || !($record instanceof SiteTree)) {
             // misconfiguration, disable cache
             Logger::log("Controller has no record, calling disabledCache()", "NOTICE");
             return $this->setDisableCacheState();
         }
+
         $siteConfig = $record->getSiteConfig();
         if(!$siteConfig || !($siteConfig instanceof SiteConfig)) {
             // misconfiguration, disable cache
             Logger::log("Record is not a Siteconfig, calling disabledCache()", "NOTICE");
             return $this->setDisableCacheState();
         }
-        if($siteConfig->CanViewType !== InheritedPermissions::ANYONE) {
+
+        if ($siteConfig->CanViewType !== InheritedPermissions::ANYONE) {
             // restricted siteconfig setting
             return $this->setDisableCacheState();
-        } else if(!$this->hasAnyoneViewPermission($record, $siteConfig)) {
+        } elseif (!$this->hasAnyoneViewPermission($record, $siteConfig)) {
             // restricted sitetree record setting
             return $this->setDisableCacheState();
         }
+        return null;
     }
 
     /**
@@ -56,19 +61,17 @@ class ContentControllerExtension extends Extension {
      */
     private function setDisableCacheState() {
         HTTPCacheControlMiddleware::singleton()->disableCache(true)->useAppliedState();
-        return;
     }
 
     /**
      * Determine whether a SiteTree record can be viewed by anyone, taking into
      * account parent settings and site config
-     * @return bool
      */
     private function hasAnyoneViewPermission(SiteTree $record, SiteConfig $siteConfig) : bool {
-        if($record->CanViewType === InheritedPermissions::ANYONE) {
+        if ($record->CanViewType === InheritedPermissions::ANYONE) {
             // this record sets permissions
             return true;
-        } else if ($record->CanViewType === InheritedPermissions::INHERIT) {
+        } elseif ($record->CanViewType === InheritedPermissions::INHERIT) {
             if( ($parent = $record->Parent()) && $parent->exists() ) {
                 // inheriting from parent
                 return $this->hasAnyoneViewPermission($parent, $siteConfig);

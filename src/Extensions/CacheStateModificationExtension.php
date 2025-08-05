@@ -7,6 +7,7 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 /**
  * Check project configuration for controller cache state configuration
  * Currently supports private or disable cache (forced) states on specific controllers
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\Control\Controller & static)>
  */
 class CacheStateModificationExtension extends Extension {
 
@@ -15,6 +16,7 @@ class CacheStateModificationExtension extends Extension {
         if(!empty($configuration['privateCache'])) {
             $this->setPrivateState($configuration['privateCache']);
         }
+
         if(!empty($configuration['disableCache'])) {
             $this->setDisableState($configuration['disableCache']);
         }
@@ -25,11 +27,9 @@ class CacheStateModificationExtension extends Extension {
      * @param array $controllers to check current controller against
      */
     protected function matchController(array $controllers) : bool {
-        $controllerCheck = function($className, $k) use ($controllers) {
-            return ($this->owner instanceof $className);
-        };
+        $controllerCheck = (fn($className, $k): bool => $this->getOwner() instanceof $className);
         $matches = array_filter($controllers, $controllerCheck, ARRAY_FILTER_USE_BOTH);
-        return !empty($matches);
+        return $matches !== [];
     }
 
     /**
@@ -39,7 +39,7 @@ class CacheStateModificationExtension extends Extension {
      * @param array $controllers controllers that should have a disabled cache
      */
     protected function setDisableState(array $controllers) {
-        if(empty($controllers)) {
+        if($controllers === []) {
             // none configured
             return;
         }
@@ -58,7 +58,7 @@ class CacheStateModificationExtension extends Extension {
      * @param array $controllers controllers that should have a private cache
      */
     protected function setPrivateState(array $controllers) {
-        if(empty($controllers)) {
+        if($controllers === []) {
             // none configured
             return;
         }

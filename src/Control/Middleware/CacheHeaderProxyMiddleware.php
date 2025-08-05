@@ -30,6 +30,7 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
         } else {
             $this->useAppliedState = true;
         }
+
         return $this;
     }
 
@@ -38,6 +39,7 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
      * parent::augmentState() with an additional step where cache state is set
      * from configuration, provided the application has not set a state
      */
+    #[\Override]
     protected function augmentState(HTTPRequest $request, HTTPResponse $response)
     {
         parent::augmentState($request, $response);
@@ -92,25 +94,18 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
         $noStore = CacheHeaderConfiguration::config()->get('no_store');
         $noCache = CacheHeaderConfiguration::config()->get('no_cache');
 
-        switch($state) {
-            case HTTPCacheControlMiddleware::STATE_PUBLIC:
-                $this->publicCache(false);
-                break;
-            case HTTPCacheControlMiddleware::STATE_PRIVATE:
-                $this->privateCache(false);
-                break;
-            case HTTPCacheControlMiddleware::STATE_DISABLED:
-                $this->disableCache(false);
-                break;
-            default:
-                $this->enableCache(false);
-                break;
-        }
+        match ($state) {
+            HTTPCacheControlMiddleware::STATE_PUBLIC => $this->publicCache(false),
+            HTTPCacheControlMiddleware::STATE_PRIVATE => $this->privateCache(false),
+            HTTPCacheControlMiddleware::STATE_DISABLED => $this->disableCache(false),
+            default => $this->enableCache(false),
+        };
 
         // Add/update Vary header value
         if(!is_null($vary)) {
             $this->setVary($vary);
         }
+
         // Add must-revalidate
 
         if(!is_null($mustRevalidate)) {

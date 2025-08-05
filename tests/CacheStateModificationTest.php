@@ -7,7 +7,7 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once( dirname(__FILE__) . "/AbstractCacheTest.php" );
+require_once( __DIR__ . "/AbstractCacheTest.php" );
 
 /**
  * Test controller coming under configured privateCache / disableCache config
@@ -33,6 +33,7 @@ class CacheStateModificationTest extends AbstractCacheTest {
      */
     protected $sMaxAge = 7401;
 
+    #[\Override]
     protected function setUp() : void
     {
         parent::setUp();
@@ -59,13 +60,13 @@ class CacheStateModificationTest extends AbstractCacheTest {
 
     }
 
-    public function testCacheStateModificationPrivate() {
+    public function testCacheStateModificationPrivate(): void {
 
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
 
         // Request for page with controller in privateCache configuration
         $response = $this->get("private-cache/");
-        $body = $response->getBody();
+        $response->getBody();
 
         $headers = $response->getHeaders();
         $this->assertTrue(!empty($headers['cache-control']), "must have a cache-control response header");
@@ -76,13 +77,13 @@ class CacheStateModificationTest extends AbstractCacheTest {
         $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Header {$headers['cache-control']} has must-revalidate" );
     }
 
-    public function testCacheStateModificationDisable() {
+    public function testCacheStateModificationDisable(): void {
 
         $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
 
         // Request for page with controller in disableCache configuration
         $response = $this->get("disable-cache/");
-        $body = $response->getBody();
+        $response->getBody();
 
         $headers = $response->getHeaders();
         $this->assertTrue(!empty($headers['cache-control']), "must have a cache-control response header");

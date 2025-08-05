@@ -11,13 +11,16 @@ use SilverStripe\Forms\FormAction;
 use SilverStripe\Forms\TextField;
 use PageController;
 
+/**
+ * @extends \PageController<\Page>
+ */
 class PublicCachePageController extends PageController implements TestOnly {
 
     public function Form()
     {
 
         if($this->request->getVar('noform')) {
-            return;
+            return null;
         }
 
         $form = Form::create(

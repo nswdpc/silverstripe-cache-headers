@@ -6,5 +6,8 @@ use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\TestOnly;
 use PageController;
 
+/**
+ * @extends \PageController<\Page>
+ */
 class CacheStatePrivatePageController extends PageController implements TestOnly {
 }
