@@ -56,6 +56,7 @@ class ContentControllerExtension extends Extension
             // restricted sitetree record setting
             return $this->setDisableCacheState();
         }
+
         return null;
     }
 
