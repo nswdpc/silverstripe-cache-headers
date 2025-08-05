@@ -7,12 +7,12 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once(__DIR__ . "/AbstractCacheTest.php");
+require_once(__DIR__ . "/AbstractCacheTestCase.php");
 
 /**
  * Test controller coming under configured privateCache / disableCache config
  */
-class CacheStateModificationTest extends AbstractCacheTest
+class CacheStateModificationTest extends AbstractCacheTestCase
 {
     protected static $fixture_file = 'CacheStateModificationTest.yml';
 

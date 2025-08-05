@@ -6,9 +6,9 @@ use NSWDPC\Utilities\Cache\CacheHeaderConfiguration;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once(__DIR__ . "/AbstractCacheTest.php");
+require_once(__DIR__ . "/AbstractCacheTestCase.php");
 
-class PrivateCacheTest extends AbstractCacheTest
+class PrivateCacheTest extends AbstractCacheTestCase
 {
     protected static $fixture_file = 'PrivateCacheTest.yml';
 

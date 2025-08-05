@@ -15,7 +15,7 @@ use SilverStripe\View\SSViewer;
 /**
  * Base test setup for cache headers tests
  */
-abstract class AbstractCacheTest extends FunctionalTest
+abstract class AbstractCacheTestCase extends FunctionalTest
 {
     /**
      * Perform operations prior to boot
