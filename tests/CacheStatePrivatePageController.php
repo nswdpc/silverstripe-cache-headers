@@ -2,12 +2,12 @@
 
 namespace NSWDPC\Utilities\Cache\Tests;
 
-use SilverStripe\Core\Config\Config;
 use SilverStripe\Dev\TestOnly;
 use PageController;
 
 /**
  * @extends \PageController<\Page>
  */
-class CacheStatePrivatePageController extends PageController implements TestOnly {
+class CacheStatePrivatePageController extends PageController implements TestOnly
+{
 }

@@ -2,7 +2,6 @@
 
 namespace NSWDPC\Utilities\Cache;
 
-use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
@@ -12,8 +11,8 @@ use SilverStripe\Core\Injector\Injectable;
  * Setting null values for a directive option means it will not be set
  * @author James
  */
-class CacheHeaderConfiguration {
-
+class CacheHeaderConfiguration
+{
     use Configurable;
     use Extensible;
     use Injectable;

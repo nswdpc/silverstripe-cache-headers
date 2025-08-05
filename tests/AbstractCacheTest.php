@@ -15,8 +15,8 @@ use SilverStripe\View\SSViewer;
 /**
  * Base test setup for cache headers tests
  */
-abstract class AbstractCacheTest extends FunctionalTest {
-
+abstract class AbstractCacheTest extends FunctionalTest
+{
     /**
      * Perform operations prior to boot
      * e.g. to avoid cache control modifiers in phpunit config
@@ -32,7 +32,7 @@ abstract class AbstractCacheTest extends FunctionalTest {
     }
 
     #[\Override]
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
         Config::modify()->set(Director::class, 'alternate_base_url', '/');
@@ -58,7 +58,7 @@ abstract class AbstractCacheTest extends FunctionalTest {
         Config::modify()->set(HTTPCacheControlMiddleware::class, 'defaultState', HTTPCacheControlMiddleware::STATE_ENABLED);
         Config::modify()->set(HTTPCacheControlMiddleware::class, 'defaultForcingLevel', 0);
 
-        $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
+        $this->setSiteConfigCanViewType(InheritedPermissions::ANYONE);
 
         // intial request without session
         $this->logOut();
@@ -68,16 +68,18 @@ abstract class AbstractCacheTest extends FunctionalTest {
     /**
      * Set site config CanViewType
      */
-    protected function setSiteConfigCanViewType(string $type) {
+    protected function setSiteConfigCanViewType(string $type)
+    {
         $siteConfig = SiteConfig::current_site_config();
         $siteConfig->CanViewType = $type;
         $siteConfig->write();
     }
 
-    protected function getCacheControlParts($header) : array {
-        $directives = array_map("trim", explode("," , (string) $header));
+    protected function getCacheControlParts($header): array
+    {
+        $directives = array_map("trim", explode(",", (string) $header));
         $parts = [];
-        foreach($directives as $directive) {
+        foreach ($directives as $directive) {
             $part = explode("=", $directive, 2);
             $parts[ $part[0] ] = $part[1] ?? null;
         }
@@ -91,7 +93,8 @@ abstract class AbstractCacheTest extends FunctionalTest {
      * @param array $parts cache control parts in key => value pairing
      * @param string $state eg private, public
      */
-    protected function hasCachingState(array $parts, $state) : bool {
+    protected function hasCachingState(array $parts, $state): bool
+    {
         return array_key_exists($state, $parts);
     }
 
@@ -100,7 +103,8 @@ abstract class AbstractCacheTest extends FunctionalTest {
      * @param array $parts cache control parts in key => value pairing
      * @param null $value, optional, check if the value of the directive matches this value passed in
      */
-    protected function hasCacheDirective(array $parts, string $directive, $value = null) : bool {
+    protected function hasCacheDirective(array $parts, string $directive, $value = null): bool
+    {
         $exists = array_key_exists($directive, $parts);
         if (!$exists) {
             return false;

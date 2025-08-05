@@ -7,13 +7,13 @@ use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Security\InheritedPermissions;
 use Page;
 
-require_once( __DIR__ . "/AbstractCacheTest.php" );
+require_once(__DIR__ . "/AbstractCacheTest.php");
 
 /**
  * Test controller coming under configured privateCache / disableCache config
  */
-class CacheStateModificationTest extends AbstractCacheTest {
-
+class CacheStateModificationTest extends AbstractCacheTest
+{
     protected static $fixture_file = 'CacheStateModificationTest.yml';
 
     protected $usesDatabase = true;
@@ -34,7 +34,7 @@ class CacheStateModificationTest extends AbstractCacheTest {
     protected $sMaxAge = 7401;
 
     #[\Override]
-    protected function setUp() : void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -60,9 +60,10 @@ class CacheStateModificationTest extends AbstractCacheTest {
 
     }
 
-    public function testCacheStateModificationPrivate(): void {
+    public function testCacheStateModificationPrivate(): void
+    {
 
-        $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
+        $this->setSiteConfigCanViewType(InheritedPermissions::ANYONE);
 
         // Request for page with controller in privateCache configuration
         $response = $this->get("private-cache/");
@@ -73,13 +74,14 @@ class CacheStateModificationTest extends AbstractCacheTest {
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
 
-        $this->assertTrue( $this->hasCachingState($parts, HTTPCacheControlMiddleware::STATE_PRIVATE), "Header {$headers['cache-control']} has private state" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Header {$headers['cache-control']} has must-revalidate" );
+        $this->assertTrue($this->hasCachingState($parts, HTTPCacheControlMiddleware::STATE_PRIVATE), "Header {$headers['cache-control']} has private state");
+        $this->assertTrue($this->hasCacheDirective($parts, "must-revalidate"), "Header {$headers['cache-control']} has must-revalidate");
     }
 
-    public function testCacheStateModificationDisable(): void {
+    public function testCacheStateModificationDisable(): void
+    {
 
-        $this->setSiteConfigCanViewType( InheritedPermissions::ANYONE );
+        $this->setSiteConfigCanViewType(InheritedPermissions::ANYONE);
 
         // Request for page with controller in disableCache configuration
         $response = $this->get("disable-cache/");
@@ -90,8 +92,8 @@ class CacheStateModificationTest extends AbstractCacheTest {
 
         $parts = $this->getCacheControlParts($headers['cache-control']);
 
-        $this->assertFalse( $this->hasCachingState($parts, HTTPCacheControlMiddleware::STATE_DISABLED), "Header {$headers['cache-control']} has disabled state" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "no-store") && $this->hasCacheDirective($parts, "no-cache"), "Header {$headers['cache-control']} has no-cache && no-store" );
-        $this->assertTrue( $this->hasCacheDirective($parts, "must-revalidate"), "Header {$headers['cache-control']} has must-revalidate" );
+        $this->assertFalse($this->hasCachingState($parts, HTTPCacheControlMiddleware::STATE_DISABLED), "Header {$headers['cache-control']} has disabled state");
+        $this->assertTrue($this->hasCacheDirective($parts, "no-store") && $this->hasCacheDirective($parts, "no-cache"), "Header {$headers['cache-control']} has no-cache && no-store");
+        $this->assertTrue($this->hasCacheDirective($parts, "must-revalidate"), "Header {$headers['cache-control']} has must-revalidate");
     }
 }
