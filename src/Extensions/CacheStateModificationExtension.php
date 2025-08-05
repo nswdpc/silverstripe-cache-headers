@@ -3,6 +3,7 @@
 namespace NSWDPC\Utilities\Cache;
 
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 
 /**
@@ -49,7 +50,7 @@ class CacheStateModificationExtension extends Extension
         }
 
         if ($match = $this->matchController($controllers)) {
-            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
+            $cacheMiddleware = Injector::inst()->get(HTTPCacheControlMiddleware::class);
             $cacheMiddleware->disableCache(true)->useAppliedState();
         }
     }
@@ -69,7 +70,7 @@ class CacheStateModificationExtension extends Extension
         }
 
         if ($match = $this->matchController($controllers)) {
-            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
+            $cacheMiddleware = Injector::inst()->get(HTTPCacheControlMiddleware::class);
             $cacheMiddleware->privateCache(true)->useAppliedState();
         }
     }

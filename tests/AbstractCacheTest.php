@@ -38,7 +38,7 @@ abstract class AbstractCacheTest extends FunctionalTest
         Config::modify()->set(Director::class, 'alternate_base_url', '/');
 
         // Nested URLs must be true
-        Config::inst()->set(SiteTree::class, 'nested_urls', true);
+        Config::modify()->set(SiteTree::class, 'nested_urls', true);
 
         // Add test theme
         $themes = [
@@ -101,9 +101,10 @@ abstract class AbstractCacheTest extends FunctionalTest
     /**
      * Check a directive exists in the cache control parts, pass a value to check that as well
      * @param array $parts cache control parts in key => value pairing
-     * @param null $value, optional, check if the value of the directive matches this value passed in
+     * @param string $directive a cache control directive
+     * @param mixed $value, optional, check if the value of the directive matches this value passed in
      */
-    protected function hasCacheDirective(array $parts, string $directive, $value = null): bool
+    protected function hasCacheDirective(array $parts, string $directive, mixed $value = null): bool
     {
         $exists = array_key_exists($directive, $parts);
         if (!$exists) {

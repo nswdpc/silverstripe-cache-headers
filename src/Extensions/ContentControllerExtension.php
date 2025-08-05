@@ -4,6 +4,7 @@ namespace NSWDPC\Utilities\Cache;
 
 use SilverStripe\CMS\Model\SiteTree;
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Security\InheritedPermissions;
 use SilverStripe\SiteConfig\SiteConfig;
@@ -64,7 +65,8 @@ class ContentControllerExtension extends Extension
      */
     private function setDisableCacheState()
     {
-        HTTPCacheControlMiddleware::singleton()->disableCache(true)->useAppliedState();
+        $cacheMiddleware = Injector::inst()->get(HTTPCacheControlMiddleware::class);
+        $cacheMiddleware->disableCache(true)->useAppliedState();
     }
 
     /**
