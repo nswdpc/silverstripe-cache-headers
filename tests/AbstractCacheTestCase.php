@@ -77,7 +77,7 @@ abstract class AbstractCacheTestCase extends FunctionalTest
 
     protected function getCacheControlParts($header): array
     {
-        $directives = array_map("trim", explode(",", (string) $header));
+        $directives = array_map(trim(...), explode(",", (string) $header));
         $parts = [];
         foreach ($directives as $directive) {
             $part = explode("=", $directive, 2);

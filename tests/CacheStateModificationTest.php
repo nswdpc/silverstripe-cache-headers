@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NSWDPC\Utilities\Cache\Tests;
 
 use NSWDPC\Utilities\Cache\CacheHeaderConfiguration;
