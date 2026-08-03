@@ -31,13 +31,9 @@ NSWDPC\Utilities\Cache\CacheHeaderConfiguration:
   # controller configuration
   controllers:
     disableCache:
+      - 'SilverStripe\Admin\AdminController'
       - 'SilverStripe\Dev\DevelopmentAdmin'
-      - 'SilverStripe\Dev\DevBuildController'
-      - 'SilverStripe\Dev\DevConfigController'
-      - 'SilverStripe\Dev\SapphireInfo'
-      - 'SilverStripe\Dev\InstallerTest'
       - 'SilverStripe\GraphQL\Controller'
-      - 'SilverStripe\ORM\DatabaseAdmin'
       - 'SilverStripe\Security\Security'
       - 'SilverStripe\ShareDraftContent\Controllers\ShareDraftController'
       - 'SilverStripe\Assets\Storage\ProtectedFileController'
