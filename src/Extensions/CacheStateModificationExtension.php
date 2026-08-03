@@ -1,21 +1,26 @@
 <?php
+
 namespace NSWDPC\Utilities\Cache;
 
 use SilverStripe\Core\Extension;
+use SilverStripe\Core\Injector\Injector;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 
 /**
  * Check project configuration for controller cache state configuration
  * Currently supports private or disable cache (forced) states on specific controllers
+ * @extends \SilverStripe\Core\Extension<(\SilverStripe\Control\Controller & static)>
  */
-class CacheStateModificationExtension extends Extension {
-
-    public function onBeforeInit() {
+class CacheStateModificationExtension extends Extension
+{
+    public function onBeforeInit()
+    {
         $configuration = CacheHeaderConfiguration::config()->get('controllers');
-        if(!empty($configuration['privateCache'])) {
+        if (!empty($configuration['privateCache'])) {
             $this->setPrivateState($configuration['privateCache']);
         }
-        if(!empty($configuration['disableCache'])) {
+
+        if (!empty($configuration['disableCache'])) {
             $this->setDisableState($configuration['disableCache']);
         }
     }
@@ -24,12 +29,11 @@ class CacheStateModificationExtension extends Extension {
      * Match current controller against an array of controller names
      * @param array $controllers to check current controller against
      */
-    protected function matchController(array $controllers) : bool {
-        $controllerCheck = function($className, $k) use ($controllers) {
-            return ($this->owner instanceof $className);
-        };
+    protected function matchController(array $controllers): bool
+    {
+        $controllerCheck = (fn ($className, $k): bool => $this->getOwner() instanceof $className);
         $matches = array_filter($controllers, $controllerCheck, ARRAY_FILTER_USE_BOTH);
-        return !empty($matches);
+        return $matches !== [];
     }
 
     /**
@@ -38,14 +42,15 @@ class CacheStateModificationExtension extends Extension {
      * See config.yml for the configured list of controllers
      * @param array $controllers controllers that should have a disabled cache
      */
-    protected function setDisableState(array $controllers) {
-        if(empty($controllers)) {
+    protected function setDisableState(array $controllers)
+    {
+        if ($controllers === []) {
             // none configured
             return;
         }
 
-        if($match = $this->matchController($controllers)) {
-            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
+        if ($match = $this->matchController($controllers)) {
+            $cacheMiddleware = Injector::inst()->get(HTTPCacheControlMiddleware::class);
             $cacheMiddleware->disableCache(true)->useAppliedState();
         }
     }
@@ -57,14 +62,15 @@ class CacheStateModificationExtension extends Extension {
      * See config.yml for the configured list of controllers
      * @param array $controllers controllers that should have a private cache
      */
-    protected function setPrivateState(array $controllers) {
-        if(empty($controllers)) {
+    protected function setPrivateState(array $controllers)
+    {
+        if ($controllers === []) {
             // none configured
             return;
         }
 
-        if($match = $this->matchController($controllers)) {
-            $cacheMiddleware = HTTPCacheControlMiddleware::singleton();
+        if ($match = $this->matchController($controllers)) {
+            $cacheMiddleware = Injector::inst()->get(HTTPCacheControlMiddleware::class);
             $cacheMiddleware->privateCache(true)->useAppliedState();
         }
     }

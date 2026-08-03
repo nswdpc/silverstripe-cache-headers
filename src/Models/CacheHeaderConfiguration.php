@@ -1,8 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NSWDPC\Utilities\Cache;
 
-use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
 use SilverStripe\Core\Config\Configurable;
 use SilverStripe\Core\Extensible;
 use SilverStripe\Core\Injector\Injectable;
@@ -12,51 +13,50 @@ use SilverStripe\Core\Injector\Injectable;
  * Setting null values for a directive option means it will not be set
  * @author James
  */
-class CacheHeaderConfiguration {
-
+class CacheHeaderConfiguration
+{
     use Configurable;
     use Extensible;
     use Injectable;
 
     /**
-     * @var string
      * @config
      */
-    private static $state = 'enabled';
+    private static string $state = 'enabled';
 
     /**
      * @config
      */
-    private static $max_age = null;
+    private static $max_age;
 
     /**
      * @config
      */
-    private static $s_max_age = null;
+    private static $s_max_age;
 
     /**
      * @config
      */
-    private static $must_revalidate = null;
+    private static $must_revalidate;
 
     /**
      * @config
      */
-    private static $vary = null;
+    private static $vary;
 
     /**
      * @config
      */
-    private static $no_store = null;
+    private static $no_store;
 
     /**
      * @config
      */
-    private static $no_cache = null;
+    private static $no_cache;
 
     /**
      * @config
      */
-    private static $controllers = [];
+    private static array $controllers = [];
 
 }

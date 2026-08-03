@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace NSWDPC\Utilities\Cache\Tests;
 
 use SilverStripe\Dev\TestOnly;
-use Page;
 
-class PublicCachePage extends \Page implements TestOnly {
-
-    private static $table_name = 'PublicCachePage';
+class PublicCachePage extends \Page implements TestOnly
+{
+    private static string $table_name = 'PublicCachePage';
 
 }

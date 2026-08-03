@@ -1,19 +1,17 @@
 <?php
+
 namespace NSWDPC\Utilities\Cache;
 
-use SilverStripe\Control\Controller;
 use SilverStripe\Control\HTTPRequest;
 use SilverStripe\Control\HTTPResponse;
-use SilverStripe\Control\HTTPResponse_Exception;
 use SilverStripe\Control\Middleware\HTTPCacheControlMiddleware;
-use SilverStripe\Core\Injector\Injector;
 
 /**
  * If the module configures specific cache control headers here
  * If the core sets specific cache states, these are respected with the application overriding these
  */
-class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
-
+class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware
+{
     /**
      * @var bool
      */
@@ -23,13 +21,15 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
      * Flag that the applied state should be preferred
      * See {@link CacheStateModificationExtension} for an example
      */
-    public function useAppliedState() : self {
-        if($this->getState() == parent::STATE_PUBLIC) {
+    public function useAppliedState(): self
+    {
+        if ($this->getState() == parent::STATE_PUBLIC) {
             Logger::log("Setting useAppliedState for public state will be ignored", "NOTICE");
             $this->useAppliedState = false;
         } else {
             $this->useAppliedState = true;
         }
+
         return $this;
     }
 
@@ -38,13 +38,14 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
      * parent::augmentState() with an additional step where cache state is set
      * from configuration, provided the application has not set a state
      */
+    #[\Override]
     protected function augmentState(HTTPRequest $request, HTTPResponse $response)
     {
         parent::augmentState($request, $response);
 
         // If a specific cache state was applied in the application
         // via self::useAppliedState(), this should be honoured
-        if($this->useAppliedState && ($this->getState() != parent::STATE_PUBLIC)) {
+        if ($this->useAppliedState && ($this->getState() != parent::STATE_PUBLIC)) {
             return;
         }
 
@@ -57,7 +58,8 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
     /**
      * Check if cache state has been modified beyond the default app/framwork configuration
      */
-    public function inInitialState() : bool {
+    public function inInitialState(): bool
+    {
         return ($this->getState() == $this->config()->get('defaultState'))
             && (is_null($this->forcingLevel) || ($this->forcingLevel == $this->config()->get('defaultForcingLevel')));
     }
@@ -76,10 +78,11 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
      *
      * @return void
      */
-    protected function applyConfiguredState() {
+    protected function applyConfiguredState()
+    {
 
         // if the state has been changed at all...
-        if(!$this->inInitialState()) {
+        if (!$this->inInitialState()) {
             // Logger::log("Not apply configured state as state has changed from default {$this->getState()}/{$this->forcingLevel}");
             return;
         }
@@ -92,28 +95,21 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
         $noStore = CacheHeaderConfiguration::config()->get('no_store');
         $noCache = CacheHeaderConfiguration::config()->get('no_cache');
 
-        switch($state) {
-            case HTTPCacheControlMiddleware::STATE_PUBLIC:
-                $this->publicCache(false);
-                break;
-            case HTTPCacheControlMiddleware::STATE_PRIVATE:
-                $this->privateCache(false);
-                break;
-            case HTTPCacheControlMiddleware::STATE_DISABLED:
-                $this->disableCache(false);
-                break;
-            default:
-                $this->enableCache(false);
-                break;
-        }
+        match ($state) {
+            HTTPCacheControlMiddleware::STATE_PUBLIC => $this->publicCache(false),
+            HTTPCacheControlMiddleware::STATE_PRIVATE => $this->privateCache(false),
+            HTTPCacheControlMiddleware::STATE_DISABLED => $this->disableCache(false),
+            default => $this->enableCache(false),
+        };
 
         // Add/update Vary header value
-        if(!is_null($vary)) {
+        if (!is_null($vary)) {
             $this->setVary($vary);
         }
+
         // Add must-revalidate
 
-        if(!is_null($mustRevalidate)) {
+        if (!is_null($mustRevalidate)) {
             $this->setMustRevalidate($mustRevalidate);
         }
 
@@ -123,17 +119,17 @@ class CacheHeaderProxyMiddleware extends HTTPCacheControlMiddleware {
         }
 
         // Setting this value results in no-store, no-cache being removed
-        if(!is_null($sharedMaxAge)) {
+        if (!is_null($sharedMaxAge)) {
             $this->setSharedMaxAge($sharedMaxAge);
         }
 
         // if no-cache is set, this will remove max-age directives
-        if(!is_null($noCache)) {
+        if (!is_null($noCache)) {
             $this->setNoCache($noCache);
         }
 
         // If no-store is set, it will remove max-age directives
-        if(!is_null($noStore)) {
+        if (!is_null($noStore)) {
             $this->setNoStore($noStore);
         }
 
